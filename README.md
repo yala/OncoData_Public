@@ -1,5 +1,10 @@
 # OncoData
-This repo contains data preprocessing scripts for the mammo project.
+Preprocessing scripts to convert Dicoms to PNGs and extract relevant metadata.
+
+# Introduction
+This repo contains data preprocessing scripts for our Mammography projects.
+For details on model development, see [OncoNet](github.com/yala/OncoNet_Public).
+To use the models, see [OncoServe](github.com/yala/OncoServe_Public).
 
 ## Requirements
 Required python pip packages are listed in `requirements.txt`. All required pip packages and command line tools can be installed by running `./requirements.sh`.
