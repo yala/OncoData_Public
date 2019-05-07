@@ -1,0 +1,7 @@
+[submodule "ljpeg"]
+	path = ljpeg
+	url = https://github.com/TalSchuster/ljpeg
+[submodule "scripts/ljpeg_to_16png/DDSM-LJPEG"]
+	path = scripts/ljpeg_to_16png/DDSM-LJPEG
+	url = git@github.com:TalSchuster/DDSM-LJPEG.git
+	branch = master
