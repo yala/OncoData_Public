@@ -94,7 +94,7 @@ def dicom_to_png_dcmtk(dicom_path, image_path, selection_criteria, skip_existing
         return
 
     # Ensure dicom  fits the selection criteria and only has one slice
-    if not (is_selected_dicom(dicom_path, selection_criteria) and has_one_slice(dicom_path)):
+    if not (is_selected_dicom(dicom_path, selection_criteria)):
         return
 
     # Create directory for image if necessary
@@ -102,7 +102,11 @@ def dicom_to_png_dcmtk(dicom_path, image_path, selection_criteria, skip_existing
 
     # Convert DICOM to PNG using dcmj2pnm (support.dcmtk.org/docs/dcmj2pnm.html)
     # from dcmtk library (dicom.offis.de/dcmtk.php.en)
-    Popen(['dcmj2pnm', '+on2', '--min-max-window', dicom_path, image_path]).wait()
+    manufacturer = dicom.read_file(dicom_path).Manufacturer
+    if 'GE' in manufacturer:
+        Popen(['dcmj2pnm', '+on2', '--use-voi-lut', '0', dicom_path, ge_image_path]).wait()
+    else:
+        Popen(['dcmj2pnm', '+on2', '--min-max-window', dicom_path, image_path]).wait()
 
 
 def dicom_to_png_imagemagick(dicom_path, image_path, selection_criteria, skip_existing=True):
