@@ -10,6 +10,8 @@ from p_tqdm import p_map, p_umap
 
 from oncodata.dicom_to_png.get_slice_count import get_slice_count
 
+DEFAULT_WINDOW_LEVEL = 540
+DEFAULT_WINDOW_WIDTH = 580
 
 def has_one_slice(dicom_path):
     '''Checks if dicom has one splice.
@@ -102,9 +104,13 @@ def dicom_to_png_dcmtk(dicom_path, image_path, selection_criteria, skip_existing
 
     # Convert DICOM to PNG using dcmj2pnm (support.dcmtk.org/docs/dcmj2pnm.html)
     # from dcmtk library (dicom.offis.de/dcmtk.php.en)
-    manufacturer = dicom.read_file(dicom_path).Manufacturer
+    dcm_file = dicom.read_file(dicom_path)
+    manufacturer = dcm_file.Manufacturer
+    series = dcm_file.SeriesDescription
     if 'GE' in manufacturer:
-        Popen(['dcmj2pnm', '+on2', '--use-voi-lut', '0', dicom_path, ge_image_path]).wait()
+        Popen(['dcmj2pnm', '+on2', '--use-voi-lut', '1', dicom_path, image_path]).wait()
+    elif 'C-View' in series:
+        Popen(['dcmj2pnm', '+on2', '+Ww', DEFAULT_WINDOW_LEVEL, DEFAULT_WINDOW_WIDTH, dicom_path, image_path]).wait()
     else:
         Popen(['dcmj2pnm', '+on2', '--min-max-window', dicom_path, image_path]).wait()
 
