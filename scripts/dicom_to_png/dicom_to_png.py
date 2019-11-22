@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+import json
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 
@@ -38,7 +39,7 @@ def dicom_path_to_png_path(dicom_path, dicom_dir, png_dir, dicom_ext):
 
     return png_path
 
-def main(dicom_dir, png_dir, dcmtk, imagemagick, matlab, dicom_types, dicom_ext):
+def main(dicom_dir, dicom_list_json_path, png_dir, dcmtk, imagemagick, matlab, dicom_types, dicom_ext):
     """Converts DICOM files in a directory to PNG images.
 
     NOTE: When using Matlab, must be run from oncodata/dicom_to_png
@@ -46,6 +47,7 @@ def main(dicom_dir, png_dir, dcmtk, imagemagick, matlab, dicom_types, dicom_ext)
 
     Arguments:
         dicom_dir(str): Path to a directory containing DICOM files.
+        dicom_list_json_path(str): Path to optional list of dicom files [replace dicom dir].
         png_dir(str): Path to a directory where PNG versions of the
             DICOM images will be saved.
         dcmtk(bool): True to use dcmtk to convert DICOMs to PNGs.
@@ -54,10 +56,13 @@ def main(dicom_dir, png_dir, dcmtk, imagemagick, matlab, dicom_types, dicom_ext)
     """
 
     print('Extracting DICOM paths')
-    dicom_paths = []
-    for root, _, files in os.walk(dicom_dir):
-        dicom_paths.extend([os.path.join(root, f) for f in files if f.endswith(dicom_ext)])
-    
+    if dicom_list_json_path is not None:
+        dicom_paths = json.load(open(dicom_list_json_path,'r'))
+    else:
+        dicom_paths = []
+        for root, _, files in os.walk(dicom_dir):
+            dicom_paths.extend([os.path.join(root, f) for f in files if f.endswith(dicom_ext)])
+
     image_paths = [dicom_path_to_png_path(dicom_path, dicom_dir, png_dir, dicom_ext) for dicom_path in dicom_paths]
 
     selection_criteria = []
@@ -85,6 +90,12 @@ if __name__ == '__main__':
         type=str,
         required=True,
         help='Path to a directory containing DICOM files.')
+    parser.add_argument(
+        '--dicom_list_json',
+        type=str,
+        required=False,
+        default=None,
+        help='Optionally give a json with a list of dicom paths instead of a dicom directory.')
     parser.add_argument(
         '--png_dir',
         type=str,
@@ -125,4 +136,4 @@ if __name__ == '__main__':
     if not os.path.exists(args.png_dir):
         os.makedirs(args.png_dir)
 
-    main(args.dicom_dir, args.png_dir, args.dcmtk, args.imagemagick, args.matlab, args.dicom_types, args.dicom_ext)
+    main(args.dicom_dir, args.dicom_list_json, args.png_dir, args.dcmtk, args.imagemagick, args.matlab, args.dicom_types, args.dicom_ext)
