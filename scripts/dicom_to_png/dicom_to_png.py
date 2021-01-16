@@ -34,7 +34,9 @@ def dicom_path_to_png_path(dicom_path, dicom_dir, png_dir, dicom_ext):
 
     dicom_path_parts = dicom_path.split(dicom_dir)
     dicom_path_after_dir = dicom_path.replace(dicom_dir, '', 1).strip('/')
-    png_path_after_dir = dicom_path_after_dir.replace(dicom_ext, '') + '.png'
+    if dicom_ext != '':
+        png_path_after_dir = dicom_path_after_dir.replace(dicom_ext, '') 
+    png_path_after_dir = dicom_path_after_dir + '.png'
     png_path = os.path.join(png_dir, png_path_after_dir)
 
     return png_path
@@ -118,9 +120,9 @@ if __name__ == '__main__':
         help='Set flag to use matlab to convert DICOMs to PNGs')
     parser.add_argument(
         '--dicom_ext',
-        default='.dcm',
+        default='',
         type=str,
-        help='The extension of the dicom files. For filtering all other files')
+        help='The extension of the dicom files. For filtering all other files. Default as "", no filtering')
     parser.add_argument(
         '--dicom_types',
         nargs='*', default=['bpe_mri', 'mammo'],
