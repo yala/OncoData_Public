@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath
 from p_tqdm import p_umap
 
 from oncodata.dicom_metadata.get_dicom_metadata import get_dicom_metadata
-from oncodata.get_slice_count import get_slice_count
+from oncodata.dicom_to_png.get_slice_count import get_slice_count
 
 def get_dicom_metadata_and_slice_counts(dicom_path):
     """Gets DICOM metadata and slice counts.

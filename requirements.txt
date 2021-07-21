@@ -4,7 +4,6 @@ scipy
 pandas
 pymssql
 xlrd
-dicom
 h5py
 imageio
 numpy
