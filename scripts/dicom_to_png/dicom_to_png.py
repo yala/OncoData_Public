@@ -77,7 +77,7 @@ def main(dicom_dir, dicom_list_json_path, png_dir, dcmtk, imagemagick, matlab, d
 
     if dcmtk:
         print('Converting to PNG')
-        p_umap(dicom_to_png_dcmtk, dicom_paths, image_paths, selection_criteria)
+        p_umap(dicom_to_png_dcmtk, dicom_paths, image_paths)
     elif imagemagick:
         print('Converting to PNG')
         p_umap(dicom_to_png_imagemagick, dicom_paths, image_paths, selection_criteria)

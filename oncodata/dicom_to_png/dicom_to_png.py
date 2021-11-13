@@ -82,7 +82,7 @@ def create_directory_if_necessary(path):
     return
 
 
-def dicom_to_png_dcmtk(dicom_path, image_path, selection_criteria, skip_existing=True):
+def dicom_to_png_dcmtk(dicom_path, image_path, selection_criteria={}, skip_existing=True):
     """Converts a dicom image to a grayscale 16-bit png image using dcmtk.
 
     Arguments:
