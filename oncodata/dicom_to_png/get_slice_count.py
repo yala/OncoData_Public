@@ -2,7 +2,7 @@ import re
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
 
-import dicom
+import pydicom
 
 def get_slice_count(dicom_path):
     """Determines the number of slices in a DICOM.
@@ -44,7 +44,7 @@ def get_slice_count_from_metadata(dicom_path):
         contain the NumberOfFrames attribute.
     """
 
-    dicom_data = dicom.read_file(path)
+    dicom_data = pydicom.dcmread(dicom_path)
     num_slices = dicom_data[0x0028,0x0008].value
 
     return num_slices

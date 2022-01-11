@@ -1,4 +1,4 @@
-import dicom
+import pydicom
 
 def get_dicom_metadata(dicom_path):
     """Extracts metadata from a dicom file.
@@ -13,11 +13,8 @@ def get_dicom_metadata(dicom_path):
         InvalidDicomError if the dicom file cannot be read.
     """
 
-    dicom_data = dicom.read_file(dicom_path)
+    dicom_data = pydicom.dcmread(dicom_path, stop_before_pixels=True)
     dicom_keys = dicom_data.dir()
-    # Don't add image data to metadata
-    if 'PixelData'in dicom_keys:
-        dicom_keys.remove('PixelData')
     dicom_metadata = {key: str(dicom_data.get(key)) for key in dicom_keys}
 
     return dicom_metadata
