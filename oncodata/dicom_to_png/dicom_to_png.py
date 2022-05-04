@@ -1,7 +1,7 @@
 """Functions to confirm DICOM image correctness and then convert DICOMs to 16-bit PNGs using either dcmtk or Matlab."""
 
 import os
-from subprocess import Popen
+from subprocess import Popen, CalledProcessError, check_output
 from tempfile import NamedTemporaryFile
 import pydicom
 
@@ -108,7 +108,12 @@ def dicom_to_png_dcmtk(dicom_path, image_path, selection_criteria={}, skip_exist
     manufacturer = dcm_file.Manufacturer
     series = dcm_file.SeriesDescription
     if 'GE' in manufacturer:
-        Popen(['dcmj2pnm', '+on2', '--use-voi-lut', '1', dicom_path, image_path]).wait()
+        try:
+            check_output(['dcmj2pnm', '+on2', '--use-voi-lut', '1', dicom_path, image_path])
+        except CalledProcessError:
+            print(f"{dicom_path}: No LUT found. Will use sigmoid transformation instead.")
+            Popen(['dcmj2pnm', '+on2', '--sigmoid-function', '--use-window', '1', dicom_path, image_path]).wait()
+
     elif 'C-View' in series:
         Popen(['dcmj2pnm', '+on2', '+Ww', DEFAULT_WINDOW_LEVEL, DEFAULT_WINDOW_WIDTH, dicom_path, image_path]).wait()
     else:
