@@ -4,12 +4,16 @@ import argparse
 import json
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+)
 
 from p_tqdm import p_umap
 
 from oncodata.dicom_metadata.get_dicom_metadata import get_dicom_metadata
-from oncodata.get_slice_count import get_slice_count
+from oncodata.dicom_to_png.get_slice_count import get_slice_count
+
 
 def get_dicom_metadata_and_slice_counts(dicom_path):
     """Gets DICOM metadata and slice counts.
@@ -23,27 +27,28 @@ def get_dicom_metadata_and_slice_counts(dicom_path):
         information.
     """
     row = {
-        'dicom_path': dicom_path,
-        'dicom_metadata': {},
-        'slice_count': None,
-        'errors': []
+        "dicom_path": dicom_path,
+        "dicom_metadata": {},
+        "slice_count": None,
+        "errors": [],
     }
 
     # Get metadata
     try:
-        row['dicom_metadata'] = get_dicom_metadata(dicom_path)
+        row["dicom_metadata"] = get_dicom_metadata(dicom_path)
     except Exception as e:
-        row['errors'].append(str(e))
+        row["errors"].append(str(e))
 
     # Get slice count
     try:
-        row['slice_count'] = get_slice_count(dicom_path)
+        row["slice_count"] = get_slice_count(dicom_path)
     except Exception as e:
-        row['errors'].append(str(e))
+        row["errors"].append(str(e))
 
     return row
 
-def main(directory, results_path):
+
+def main(directory, results_path, no_ext):
     """Extracts and saves metadata from DICOMs to a JSON file.
 
     Arguments:
@@ -54,24 +59,40 @@ def main(directory, results_path):
 
     dicom_paths = []
     for root, _, files in os.walk(directory):
-        dicom_paths.extend([os.path.abspath(os.path.join(root, f)) for f in files if f.endswith('.dcm')])
-    
+        dicom_paths.extend(
+            [
+                os.path.abspath(os.path.join(root, f))
+                for f in files
+                if (f.endswith(".dcm") or no_ext)
+            ]
+        )
+
     metadata = p_umap(get_dicom_metadata_and_slice_counts, dicom_paths)
 
-    with open(results_path, 'w') as results_file:
+    with open(results_path, "w") as results_file:
         json.dump(metadata, results_file, indent=4, sort_keys=True)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--directory',
+        "--directory",
         type=str,
         required=True,
-        help='Path to a directory containing DICOMs.')
-    parser.add_argument('--results_path',
+        help="Path to a directory containing DICOMs.",
+    )
+    parser.add_argument(
+        "--results_path",
         type=str,
         required=True,
-        help='Path to the JSON where the metadata will be saved.')
+        help="Path to the JSON where the metadata will be saved.",
+    )
+    parser.add_argument(
+        "--no_ext",
+        default=False,
+        action="store_true",
+        help="Set flag to signify DICOMs do not have .dcm ext.",
+    )
     args = parser.parse_args()
 
-    main(args.directory, args.results_path)
+    main(args.directory, args.results_path, args.no_ext)

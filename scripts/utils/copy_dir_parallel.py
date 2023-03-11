@@ -6,6 +6,7 @@ from shutil import copyfile
 
 from p_tqdm import p_umap
 
+
 def main(source_dir, dest_dir):
     """Copies all files from one directory to another
     while preserving the underlying directory structure.
@@ -29,7 +30,7 @@ def main(source_dir, dest_dir):
                 when the destination file already exists.
         """
 
-        dest_path = source_path.replace(source_dir.strip('/'), dest_dir.strip('/'))
+        dest_path = source_path.replace(source_dir.strip("/"), dest_dir.strip("/"))
 
         # Skip if dest file already exists
         if skip_existing and os.path.exists(dest_path):
@@ -42,18 +43,15 @@ def main(source_dir, dest_dir):
 
     p_umap(copy, paths)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--source_dir',
-        type=str,
-        required=True,
-        help='Source directory')
+        "--source_dir", type=str, required=True, help="Source directory"
+    )
     parser.add_argument(
-        '--dest_dir',
-        type=str,
-        required=True,
-        help='Destination directory')
+        "--dest_dir", type=str, required=True, help="Destination directory"
+    )
     args = parser.parse_args()
 
     main(args.source_dir, args.dest_dir)

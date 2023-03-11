@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 
 import pydicom
 
+
 def get_slice_count(dicom_path):
     """Determines the number of slices in a DICOM.
 
@@ -21,19 +22,24 @@ def get_slice_count(dicom_path):
         not contain the number of slices in the DICOM.
     """
 
-    with NamedTemporaryFile(suffix='.png') as temp:
-        output, err = Popen(['dcmj2pnm', '+on', '+Wi', '1000000', dicom_path, temp.name], stdout=PIPE, stderr=PIPE).communicate()
-    err = err.decode('utf-8')
-    num_slices = int(re.search(r'only (\d)+ window', err).group(1))
+    with NamedTemporaryFile(suffix=".png") as temp:
+        output, err = Popen(
+            ["dcmj2pnm", "+on", "+Wi", "1000000", dicom_path, temp.name],
+            stdout=PIPE,
+            stderr=PIPE,
+        ).communicate()
+    err = err.decode("utf-8")
+    num_slices = int(re.search(r"only (\d)+ window", err).group(1))
 
     return num_slices
+
 
 def get_slice_count_from_metadata(dicom_path):
     """Determines the number of slices in a DICOM.
 
     Works by reading the DICOM metadata attribute
     at [0x0028, 0x0008], is the number of frames
-    in the DICOM. 
+    in the DICOM.
 
     Arguments:
         dicom_path(str): The path to a dicom.
@@ -45,6 +51,6 @@ def get_slice_count_from_metadata(dicom_path):
     """
 
     dicom_data = pydicom.dcmread(dicom_path)
-    num_slices = dicom_data[0x0028,0x0008].value
+    num_slices = dicom_data[0x0028, 0x0008].value
 
     return num_slices

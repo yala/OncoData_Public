@@ -2,6 +2,7 @@
 
 from collections import Counter
 
+
 def get_count(dicom_metadata, key):
     """Creates a mapping from values to counts for a DICOM metadata key.
 
@@ -14,10 +15,11 @@ def get_count(dicom_metadata, key):
         with that value.
     """
 
-    values = [row.get(key, 'None') for row in dicom_metadata]
+    values = [row.get(key, "None") for row in dicom_metadata]
     counts = Counter(values)
 
     return dict(counts)
+
 
 def get_num_dicoms_to_count(dicom_metadata):
     """Creates a mapping from number of DICOMs to number of accessions containing that many DICOMs.
@@ -29,12 +31,13 @@ def get_num_dicoms_to_count(dicom_metadata):
         of accessions containing that many DICOMs.
     """
 
-    accession_to_num_dicoms = get_count(dicom_metadata, 'AccessionNumber')
-    accession_to_num_dicoms.pop('None', None) # Ignore DICOMs with no AccessionNumber
+    accession_to_num_dicoms = get_count(dicom_metadata, "AccessionNumber")
+    accession_to_num_dicoms.pop("None", None)  # Ignore DICOMs with no AccessionNumber
     dicom_counts = accession_to_num_dicoms.values()
     num_dicoms_to_count = Counter(dicom_counts)
 
     return dict(num_dicoms_to_count)
+
 
 def get_years(dicom_metadata):
     """Creates a mapping from years to number of DICOMs.
@@ -46,10 +49,14 @@ def get_years(dicom_metadata):
         number of DICOMs from that year.
     """
 
-    years = [row['StudyDate'][:4] if row.get('StudyDate', None) else 'None' for row in dicom_metadata]
+    years = [
+        row["StudyDate"][:4] if row.get("StudyDate", None) else "None"
+        for row in dicom_metadata
+    ]
     year_counts = Counter(years)
 
     return dict(year_counts)
+
 
 def summarize(metadata):
     """Generates summary statistics for DICOM metadata.
@@ -66,15 +73,17 @@ def summarize(metadata):
             which contain n DICOMs.
     """
 
-    dicom_metadata = [row['dicom_metadata'] for row in metadata]
+    dicom_metadata = [row["dicom_metadata"] for row in metadata]
 
     summary = {
-        'num_dicoms_to_count': get_num_dicoms_to_count(dicom_metadata),
-        'pixel_intensity_relationships': get_count(dicom_metadata, 'PixelIntensityRelationship'),
-        'years': get_years(dicom_metadata),
-        'sop_class_uids': get_count(dicom_metadata, 'SOPClassUID'),
-        'modality': get_count(dicom_metadata, 'Modality'),
-        'study_description': get_count(dicom_metadata, 'StudyDescription')
+        "num_dicoms_to_count": get_num_dicoms_to_count(dicom_metadata),
+        "pixel_intensity_relationships": get_count(
+            dicom_metadata, "PixelIntensityRelationship"
+        ),
+        "years": get_years(dicom_metadata),
+        "sop_class_uids": get_count(dicom_metadata, "SOPClassUID"),
+        "modality": get_count(dicom_metadata, "Modality"),
+        "study_description": get_count(dicom_metadata, "StudyDescription"),
     }
 
     return summary

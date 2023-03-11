@@ -1,5 +1,5 @@
 p_tqdm
-pydicom=='2.1.2'
+pydicom
 scipy
 pandas
 pymssql
